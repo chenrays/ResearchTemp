@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>碩士論文提案 — 排球比賽影像分析系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f1923;
+    --ink-mid: #2c3e50;
+    --ink-light: #5a6a7a;
+    --paper: #f7f4ef;
+    --paper-warm: #ede9e0;
+    --accent: #c0392b;
+    --accent2: #1a5276;
+    --accent3: #117a65;
+    --gold: #b7860b;
+    --rule: #d5cfc5;
+    --code-bg: #1e2a35;
+    --code-text: #a8d8a8;
+    --tag-bg: #eaf4fb;
+    --tag-border: #2980b9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.9;
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* ─── COVER ─── */
+  .cover {
+    background: var(--ink);
+    color: var(--paper);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 60px 40px;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 80%, rgba(192,57,43,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(26,82,118,0.22) 0%, transparent 55%);
+  }
+
+  .cover-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .cover-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    border: 1px solid rgba(192,57,43,0.5);
+    padding: 6px 18px;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .cover h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(26px, 4vw, 44px);
+    font-weight: 900;
+    line-height: 1.3;
+    max-width: 820px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.9s ease 0.15s both;
+  }
+
+  .cover h1 em {
+    font-style: normal;
+    color: #e87461;
+  }
+
+  .cover-subtitle {
+    font-size: 13px;
+    color: rgba(247,244,239,0.55);
+    margin-top: 22px;
+    letter-spacing: 0.1em;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 1s ease 0.3s both;
+  }
+
+  .cover-en {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(13px, 1.8vw, 17px);
+    color: rgba(247,244,239,0.6);
+    max-width: 700px;
+    margin-top: 16px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 1s ease 0.4s both;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 40px;
+    margin-top: 60px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 1s ease 0.55s both;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cover-meta-item {
+    text-align: center;
+  }
+
+  .cover-meta-item .label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(247,244,239,0.4);
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .cover-meta-item .value {
+    font-size: 14px;
+    color: rgba(247,244,239,0.85);
+    font-weight: 500;
+  }
+
+  .cover-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 40px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 1s ease 0.65s both;
+  }
+
+  .cover-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 5px 14px;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    animation: bounce 2s infinite 2s;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+  }
+
+  /* ─── NAV ─── */
+  .toc-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,25,35,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .toc-nav::-webkit-scrollbar { display: none; }
+
+  .toc-nav a {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    padding: 16px 14px;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .toc-nav a:hover {
+    color: rgba(255,255,255,0.9);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ─── LAYOUT ─── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 40px;
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 50px 20px; }
+  }
+
+  /* ─── SECTIONS ─── */
+  .section {
+    margin-bottom: 80px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--ink);
+    position: relative;
+  }
+
+  .section-header::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  /* ─── ABSTRACT BOX ─── */
+  .abstract-box {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 44px 48px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .abstract-box::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    right: 30px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 120px;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+  }
+
+  .abstract-box p {
+    font-size: 14.5px;
+    line-height: 2;
+    color: rgba(247,244,239,0.85);
+  }
+
+  .abstract-kw {
+    margin-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .kw-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    background: rgba(192,57,43,0.2);
+    border: 1px solid rgba(192,57,43,0.4);
+    color: #e87461;
+    border-radius: 2px;
+  }
+
+  /* ─── BODY TEXT ─── */
+  p { margin-bottom: 18px; }
+
+  .lead {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--ink-mid);
+    border-left: 3px solid var(--accent);
+    padding-left: 20px;
+    margin-bottom: 24px;
+  }
+
+  /* ─── SUBSECTIONS ─── */
+  h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 36px 0 14px;
+    color: var(--accent2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h3::before {
+    content: '▌';
+    color: var(--accent);
+    font-size: 14px;
+  }
+
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 24px 0 10px;
+    color: var(--ink);
+  }
+
+  /* ─── CARDS ─── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 28px 0;
+  }
+
+  .card {
+    background: white;
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--accent2);
+    padding: 24px;
+    border-radius: 2px;
+  }
+
+  .card.accent-red { border-top-color: var(--accent); }
+  .card.accent-green { border-top-color: var(--accent3); }
+  .card.accent-gold { border-top-color: var(--gold); }
+
+  .card-icon { font-size: 28px; margin-bottom: 12px; }
+  .card-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; color: var(--ink); }
+  .card-body { font-size: 13px; color: var(--ink-light); line-height: 1.8; }
+
+  /* ─── METHODS TABS ─── */
+  .methods-section { margin: 28px 0; }
+
+  .method-card {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .method-header {
+    padding: 18px 24px;
+    background: var(--accent2);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .method-header:hover { background: #154360; }
+
+  .method-header.alt { background: var(--accent3); }
+  .method-header.alt:hover { background: #0e6655; }
+  .method-header.alt2 { background: var(--gold); }
+  .method-header.alt2:hover { background: #9a7209; }
+
+  .method-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  .method-name { font-weight: 700; font-size: 15px; }
+  .method-arrow { margin-left: auto; transition: transform 0.2s; }
+  .method-arrow.open { transform: rotate(180deg); }
+
+  .method-body {
+    padding: 24px;
+    display: none;
+    border-top: 1px solid var(--rule);
+  }
+
+  .method-body.show { display: block; }
+
+  .method-body table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 16px;
+  }
+
+  .method-body th {
+    background: var(--ink);
+    color: white;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  .method-body td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  .method-body tr:nth-child(even) td { background: #faf9f7; }
+
+  /* ─── PIPELINE ─── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 28px 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .pipe-step {
+    background: var(--ink);
+    color: white;
+    padding: 14px 18px;
+    min-width: 100px;
+    text-align: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .pipe-step:nth-child(odd) { background: var(--accent2); }
+  .pipe-step:nth-child(3) { background: var(--accent); }
+  .pipe-step:nth-child(5) { background: var(--accent3); }
+  .pipe-step:nth-child(7) { background: var(--gold); color: var(--ink); }
+
+  .pipe-step .ps-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    opacity: 0.6;
+    display: block;
+  }
+
+  .pipe-step .ps-label {
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 4px;
+    display: block;
+    line-height: 1.3;
+  }
+
+  .pipe-arrow {
+    font-size: 20px;
+    color: var(--ink-light);
+    flex-shrink: 0;
+    padding: 0 4px;
+  }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: var(--code-bg);
+    color: var(--code-text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 24px;
+    border-radius: 4px;
+    overflow-x: auto;
+    line-height: 1.8;
+    margin: 20px 0;
+    white-space: pre;
+    border-left: 3px solid var(--accent);
+  }
+
+  .code-comment { color: #7f9f7f; }
+  .code-kw { color: #f0a500; }
+  .code-str { color: #e87461; }
+  .code-num { color: #79c0ff; }
+
+  /* ─── DATASETS ─── */
+  .dataset-list { margin: 20px 0; }
+
+  .dataset-item {
+    background: white;
+    border: 1px solid var(--rule);
+    padding: 20px 24px;
+    margin-bottom: 14px;
+    border-radius: 2px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .dataset-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper-warm);
+    border-radius: 4px;
+  }
+
+  .dataset-info { flex: 1; }
+  .dataset-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .dataset-desc { font-size: 13px; color: var(--ink-light); margin-bottom: 8px; }
+
+  .dataset-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent2);
+    word-break: break-all;
+  }
+
+  .dataset-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ─── REFERENCES ─── */
+  .ref-list { counter-reset: ref; }
+
+  .ref-item {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+    line-height: 1.75;
+    animation: none;
+  }
+
+  .ref-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    min-width: 36px;
+    padding-top: 2px;
+    font-weight: 700;
+  }
+
+  .ref-content { flex: 1; }
+  .ref-content .ref-title { font-weight: 600; color: var(--ink); }
+  .ref-content .ref-meta { color: var(--ink-light); font-size: 12px; margin-top: 3px; }
+  .ref-content .ref-url { margin-top: 5px; }
+  .ref-content .ref-url a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    text-decoration: none;
+    word-break: break-all;
+  }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .highlight-box {
+    background: linear-gradient(135deg, #eaf4fb 0%, #d6eaf8 100%);
+    border-left: 4px solid var(--accent2);
+    padding: 20px 24px;
+    border-radius: 0 4px 4px 0;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+
+  .highlight-box.warn {
+    background: linear-gradient(135deg, #fef9e7 0%, #fdebd0 100%);
+    border-left-color: var(--gold);
+  }
+
+  .highlight-box.success {
+    background: linear-gradient(135deg, #eafaf1 0%, #d5f5e3 100%);
+    border-left-color: var(--accent3);
+  }
+
+  .hb-title {
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ─── TABLE ─── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 20px 0;
+  }
+
+  .compare-table th {
+    background: var(--ink);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 600;
+  }
+
+  .compare-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .compare-table tr:nth-child(even) td { background: #faf9f7; }
+  .compare-table tr:hover td { background: #f0ede7; }
+
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+
+  .badge-green { background: #d5f5e3; color: #117a65; }
+  .badge-yellow { background: #fdebd0; color: #a04000; }
+  .badge-blue { background: #d6eaf8; color: #1a5276; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    padding: 40px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .footer strong { color: rgba(255,255,255,0.7); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  ul { padding-left: 22px; margin-bottom: 16px; }
+  ul li { margin-bottom: 8px; font-size: 14px; color: var(--ink-mid); }
+  ol { padding-left: 22px; margin-bottom: 16px; }
+  ol li { margin-bottom: 8px; font-size: 14px; color: var(--ink-mid); }
+
+  strong { color: var(--ink); font-weight: 600; }
+
+  .tag-inline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--tag-bg);
+    border: 1px solid #b3d4eb;
+    color: #1a5276;
+    padding: 1px 7px;
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+
+  .sep-line {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 40px 0;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+  }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .pipeline { flex-direction: column; align-items: flex-start; }
+    .pipe-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ COVER ═══════════ -->
+<section class="cover" id="top">
+  <div class="cover-grid"></div>
+  <div class="cover-badge">碩士論文提案 — Master's Thesis Proposal</div>
+  <h1>基於固定視角比賽影片之<br><em>排球球體軌跡與球員姿態分析系統</em><br>整合 GRU 時序模型之球技數據自動化統計</h1>
+  <p class="cover-en">A Fixed-Camera Volleyball Analytics System: Ball Trajectory Tracking, Player Pose Estimation, and Automated Performance Statistics via GRU Temporal Modeling</p>
+  <p class="cover-subtitle">運動科學 × 電腦視覺 × 深度學習 × 時序分析</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="label">研究領域</span>
+      <span class="value">運動科學 / 電腦視覺</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">論文類型</span>
+      <span class="value">應用研究型碩士論文</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">預估研究時長</span>
+      <span class="value">18 ～ 24 個月</span>
+    </div>
+  </div>
+  <div class="cover-tags">
+    <span class="cover-tag">YOLOv8</span>
+    <span class="cover-tag">MediaPipe</span>
+    <span class="cover-tag">TrackNet</span>
+    <span class="cover-tag">GRU</span>
+    <span class="cover-tag">姿態估計</span>
+    <span class="cover-tag">球體追蹤</span>
+    <span class="cover-tag">數據自動化</span>
+    <span class="cover-tag">運動表現分析</span>
+  </div>
+  <div class="scroll-hint">↓ scroll</div>
+</section>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav class="toc-nav">
+  <a href="#abstract">摘要</a>
+  <a href="#intro">前言</a>
+  <a href="#related">相關研究</a>
+  <a href="#system">系統架構</a>
+  <a href="#methods">實驗方法</a>
+  <a href="#dataset">資料集</a>
+  <a href="#eval">評估指標</a>
+  <a href="#timeline">研究時程</a>
+  <a href="#refs">文獻參考</a>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<main>
+
+<!-- ── 0. 摘要 ── -->
+<div class="container" id="abstract">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 00</span>
+      <h2 class="section-title">摘要 Abstract</h2>
+    </div>
+    <div class="abstract-box">
+      <p>
+        現代排球競技訓練對精確數據分析的需求日益迫切，然而傳統人工紀錄方式耗費大量人力、且容易產生主觀誤差。本研究提出一套整合電腦視覺與深度學習技術的排球比賽影像自動化分析系統，以單一固定視角的比賽錄影為輸入來源，透過物件偵測、球體追蹤、人體姿態估計，以及門控遞迴單元（Gated Recurrent Unit, GRU）時序模型，同步分析球體三維運動軌跡及球員動作序列。
+      </p>
+      <p>
+        系統可自動辨識舉球（Setting）、扣球（Spiking）、接球（Receiving）等技術動作，並輸出包括舉球軌跡分佈、攻擊成功率、球員移動熱區圖、每回合技術指標等結構化數據。本研究同時探討多種實驗方法——包含以 TrackNet 架構為核心的球體追蹤方案、以 MediaPipe BlazePose 結合 YOLOv8 的姿態估計方案，以及以 GRU 為時序預測骨幹的技術動作分類方案——並提供基準比較，協助後續研究者與教練依實際需求選擇最適策略。
+      </p>
+      <div class="abstract-kw">
+        <span class="kw-tag">排球影像分析</span>
+        <span class="kw-tag">GRU 時序模型</span>
+        <span class="kw-tag">球體軌跡追蹤</span>
+        <span class="kw-tag">人體姿態估計</span>
+        <span class="kw-tag">YOLOv8</span>
+        <span class="kw-tag">MediaPipe BlazePose</span>
+        <span class="kw-tag">TrackNet</span>
+        <span class="kw-tag">運動表現量化</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 1. 前言 ── -->
+<div class="container" id="intro">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <h2 class="section-title">前言 Introduction</h2>
+    </div>
+    <p class="lead">排球是一項高度仰賴團隊協作與技術精準度的競技運動。在高水平訓練中，每一次舉球的落點分佈、每一個扣球的成功率，都是指導訓練策略的關鍵依據。</p>
+
+    <h3>1.1 研究背景與動機</h3>
+    <p>
+      近年來，運動科學已從傳統質性觀察走向量化數據驅動的訓練模式。職業籃球（NBA）、足球（英超）等聯賽廣泛引入電腦視覺系統進行球員追蹤與表現分析，顯著提升了戰術規劃的精確性。然而，相較之下，排球領域的自動化影像分析研究仍相對匱乏，尤其在以單一固定視角攝影機進行全場分析的場景下，技術挑戰更為顯著。
+    </p>
+    <p>
+      本研究聚焦於此一缺口：利用賽場已架設的固定攝影機錄影，無需額外昂貴的多鏡頭設備，即可自動化擷取球體軌跡、球員移動路徑、以及關鍵技術動作的姿態序列，最終輸出可供教練決策使用的統計數據。
+    </p>
+
+    <h3>1.2 研究問題</h3>
+    <div class="card-grid">
+      <div class="card accent-red">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">問題一：球體偵測困難</div>
+        <div class="card-body">排球在比賽中移動速度快、影像模糊、時常被球員肢體遮擋，傳統目標偵測模型精度不足。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏃</div>
+        <div class="card-title">問題二：多人姿態估計干擾</div>
+        <div class="card-body">場內 12 名球員交疊移動，如何精準追蹤特定位置（舉球手、接應）的姿態序列是一大挑戰。</div>
+      </div>
+      <div class="card accent-green">
+        <div class="card-icon">🔢</div>
+        <div class="card-title">問題三：時序動作分類</div>
+        <div class="card-body">技術動作（舉球、扣球、攔網）涉及連續多幀的時序變化，需要有效的序列模型進行分類。</div>
+      </div>
+    </div>
+
+    <h3>1.3 研究目的與貢獻</h3>
+    <ul>
+      <li>建立一套可在固定視角單鏡頭下運行的排球比賽全場影像分析 pipeline。</li>
+      <li>整合球體追蹤模組（TrackNet / YOLOv8）與骨架估計模組（MediaPipe / OpenPose），實現多任務同步分析。</li>
+      <li>引入 GRU 時序模型，針對骨架關節序列進行技術動作分類，並與 LSTM、Transformer 方案進行基準比較。</li>
+      <li>輸出實用的結構化球技數據報表，包含：舉球軌跡分佈圖、攻擊成功率統計、球員位置熱圖、每回合事件序列標記。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── 2. 相關研究 ── -->
+<div class="container" id="related">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <h2 class="section-title">相關研究 Related Work</h2>
+    </div>
+
+    <h3>2.1 運動影像中的物件偵測與球體追蹤</h3>
+    <p>
+      球體追蹤是運動影像分析中最具挑戰性的子問題之一。傳統方法依賴手工設計的特徵（如色彩直方圖、霍夫圓形偵測）對環境干擾高度敏感。深度學習方法的出現顯著提升了追蹤精度。
+    </p>
+    <p>
+      <strong>TrackNet</strong>（Huang et al., 2019）是此領域的代表性工作，其以 U-Net 架構為基礎，輸入連續多幀影像生成高斯熱圖（heatmap）定位球體，在網球廣播影片上達到 F1-measure 98.5%。TrackNet 的設計思路——透過連續幀學習軌跡動態而非單幀偵測——奠定了後續研究的重要基礎，亦可直接移植應用於排球場景。
+    </p>
+    <p>
+      <strong>WASB（Widely Applicable Strong Baseline, Tarashima et al., 2023）</strong> 進一步提出跨運動種類球體追蹤的通用基準架構，公開了對應資料集與程式碼庫，具備高度可復現性。
+    </p>
+
+    <h3>2.2 排球場景下的姿態估計</h3>
+    <p>
+      <strong>Liu et al. (2024)</strong> 在真實排球比賽場景中，結合 OpenPose 與 DeepSORT 完成即時多人姿態估計與追蹤，並使用 YOLOv4 進行人體偵測，驗證了此類組合在排球動態環境下的可行性。
+    </p>
+    <p>
+      <strong>Liu & Ikenaga (2024)</strong> 針對排球扣球動作提出動作感知（motion-aware）的多視角 3D 姿態精化方法，在標準資料集取得優於先前工作的精度。儘管本研究僅使用單鏡頭，其提出的關節修正策略仍具參考價值。
+    </p>
+    <p>
+      Google 的 <strong>MediaPipe BlazePose</strong>（Bazarevsky et al., 2020）提供了輕量、即時的 33 點全身骨架估計，適合作為資源有限場景下的姿態估計基礎，已廣泛用於各類運動分析研究。
+    </p>
+
+    <h3>2.3 排球群體行為辨識</h3>
+    <p>
+      <strong>Ibrahim et al. (CVPR 2016)</strong> 建立了著名的 <em>Volleyball Dataset</em>，提出階層式深度時序模型，以雙層 LSTM 分別捕捉個人動作動態與群體活動，成為後續排球影像分析研究引用最廣的資料集與基準。
+    </p>
+
+    <h3>2.4 GRU 在時序動作分類的應用</h3>
+    <p>
+      門控遞迴單元（GRU, Cho et al., 2014）作為 LSTM 的輕量替代方案，在較短序列的時序任務中往往達到相近甚至更好的效果，且訓練效率更高。在運動動作識別領域，以人體骨架關節序列為輸入的 GRU 模型已被廣泛驗證其有效性。
+    </p>
+    <p>
+      Wang et al. (2023) 以 CNN-GRU 架構對足球球員攻擊動作進行分析；Khobdeh & Yamaghani (2024) 則以深度模糊 LSTM/GRU 混合網路進行籃球動作辨識，均顯示了閘控機制在球類運動序列分析的廣泛適用性。
+    </p>
+
+    <hr class="sep-line">
+
+    <h3>2.5 技術差距分析（Research Gap）</h3>
+    <div class="highlight-box warn">
+      <div class="hb-title">⚠ 本研究填補的空白</div>
+      現有研究多聚焦於單一任務（僅追蹤球體、或僅進行動作識別），缺乏同時整合球體軌跡與球員姿態分析的端對端系統。此外，以固定視角單鏡頭針對<strong>舉球軌跡</strong>等排球特定技術指標進行自動化量化統計的研究幾乎空白，是本論文的核心創新點。
+    </div>
+  </div>
+</div>
+
+<!-- ── 3. 系統架構 ── -->
+<div class="container" id="system">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <h2 class="section-title">系統架構 System Architecture</h2>
+    </div>
+
+    <p>整體系統設計為模組化 Pipeline，輸入為固定視角比賽錄影（MP4/MKV，建議 1080p 30fps），輸出為結構化數據報表與視覺化結果。</p>
+
+    <h3>3.1 整體 Pipeline 流程</h3>
+    <div class="pipeline">
+      <div class="pipe-step"><span class="ps-num">STEP 1</span><span class="ps-label">影片前處理</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="ps-num">STEP 2</span><span class="ps-label">球場偵測<br>& 視角校正</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="ps-num">STEP 3</span><span class="ps-label">球體偵測<br>& 軌跡追蹤</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="ps-num">STEP 4</span><span class="ps-label">球員偵測<br>& 姿態估計</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="ps-num">STEP 5</span><span class="ps-label">GRU 動作<br>分類</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="ps-num">STEP 6</span><span class="ps-label">事件偵測<br>& 數據統計</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="ps-num">STEP 7</span><span class="ps-label">報表<br>輸出</span></div>
+    </div>
+
+    <h3>3.2 各模組說明</h3>
+    <div class="card-grid">
+      <div class="card accent-gold">
+        <div class="card-icon">🎥</div>
+        <div class="card-title">Module A：影片前處理</div>
+        <div class="card-body">幀提取（FFmpeg）、亮度正規化、去模糊（可選）。偵測球場邊線，進行單應矩陣（Homography）投影轉換，將像素座標對應至真實場地座標。</div>
+      </div>
+      <div class="card accent-red">
+        <div class="card-icon">⚪</div>
+        <div class="card-title">Module B：球體追蹤</div>
+        <div class="card-body">以 TrackNet V2（三幀輸入熱圖輸出）或 YOLOv8-small 為偵測核心，配合卡爾曼濾波器平滑化軌跡，輸出逐幀球體座標序列。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏃</div>
+        <div class="card-title">Module C：多人姿態估計</div>
+        <div class="card-body">YOLOv8-pose 進行多人偵測與 17 點 COCO 關節估計，配合 DeepSORT 跨幀追蹤，對每位球員輸出逐幀骨架關節序列。</div>
+      </div>
+      <div class="card accent-green">
+        <div class="card-icon">🧠</div>
+        <div class="card-title">Module D：GRU 分類器</div>
+        <div class="card-body">輸入連續 30 幀骨架特徵向量（關節座標 + 速度），以 2 層 Bidirectional GRU 輸出技術動作類別（舉球、扣球、發球、攔網、接球、其他）。</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Module E：事件整合</div>
+        <div class="card-body">結合球體軌跡與動作分類結果，偵測每一次 rally 的起迄、技術動作序列、落點，計算舉球軌跡分佈、攻擊成功率等指標。</div>
+      </div>
+      <div class="card accent-gold">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Module F：輸出介面</div>
+        <div class="card-body">輸出 CSV 數據表、軌跡標注視頻、球場熱區圖（使用 Matplotlib/Seaborn）、及 HTML 互動式報表。</div>
+      </div>
+    </div>
+
+    <h3>3.3 GRU 模型詳細架構</h3>
+    <div class="code-block"><span class="code-comment"># GRU 動作分類模型（PyTorch 偽代碼）</span>
+<span class="code-kw">class</span> VolleyballActionGRU(nn.Module):
+    <span class="code-kw">def</span> __init__(self, input_size=<span class="code-num">51</span>, hidden_size=<span class="code-num">256</span>, num_layers=<span class="code-num">2</span>, num_classes=<span class="code-num">6</span>):
+        <span class="code-comment"># input_size: 17 joints × (x, y, confidence) = 51</span>
+        self.gru = nn.GRU(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            batch_first=<span class="code-kw">True</span>,
+            bidirectional=<span class="code-kw">True</span>,    <span class="code-comment"># 雙向 GRU 捕捉前後文脈</span>
+            dropout=<span class="code-num">0.3</span>
+        )
+        self.attention = SelfAttention(hidden_size * <span class="code-num">2</span>)  <span class="code-comment"># 注意力機制</span>
+        self.fc = nn.Linear(hidden_size * <span class="code-num">2</span>, num_classes)
+        self.dropout = nn.Dropout(<span class="code-num">0.4</span>)
+
+    <span class="code-kw">def</span> forward(self, x):
+        <span class="code-comment"># x shape: [batch, seq_len=30, input_size=51]</span>
+        out, _ = self.gru(x)               <span class="code-comment"># [batch, 30, 512]</span>
+        out = self.attention(out)           <span class="code-comment"># [batch, 512]（加權平均）</span>
+        out = self.dropout(out)
+        <span class="code-kw">return</span> self.fc(out)                  <span class="code-comment"># [batch, 6]</span>
+
+<span class="code-comment"># 輸入特徵向量設計</span>
+features = [
+    joint_coords,    <span class="code-comment"># 17 × 2 = 34 維</span>
+    joint_velocity,  <span class="code-comment"># 17 × 2 = 34 維（相鄰幀差）</span>
+    joint_conf,      <span class="code-comment"># 17 × 1 = 17 維（估計信心分數）</span>
+]  <span class="code-comment"># 合計 85 維輸入特徵</span></div>
+  </div>
+</div>
+
+<!-- ── 4. 實驗方法 ── -->
+<div class="container" id="methods">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <h2 class="section-title">實驗方法 Experimental Methods</h2>
+    </div>
+
+    <p class="lead">本研究提供三種核心模組的複數實驗方案，供選擇與比較。每個模組均可獨立替換，方便後續依資源、精度需求調整。</p>
+
+    <!-- 方法一 -->
+    <div class="methods-section">
+      <div class="method-card">
+        <div class="method-header" onclick="toggleMethod(this)">
+          <span class="method-num">METHOD A</span>
+          <span class="method-name">球體偵測與軌跡追蹤方案比較</span>
+          <span class="method-arrow">▼</span>
+        </div>
+        <div class="method-body show">
+          <p>針對排球球體的偵測與軌跡追蹤，本研究比較以下三種方案：</p>
+          <table>
+            <tr>
+              <th>方案</th>
+              <th>核心模型</th>
+              <th>架構特點</th>
+              <th>優點</th>
+              <th>限制</th>
+              <th>推薦場景</th>
+            </tr>
+            <tr>
+              <td><strong>A-1</strong><br><span class="badge badge-green">推薦優先</span></td>
+              <td>TrackNet V2</td>
+              <td>U-Net + 三幀輸入高斯熱圖</td>
+              <td>專為高速小物體設計；對模糊、部分遮擋魯棒；軌跡連貫性高</td>
+              <td>需自行標記排球訓練資料</td>
+              <td>排球廣播視角、有遮擋的場景</td>
+            </tr>
+            <tr>
+              <td><strong>A-2</strong></td>
+              <td>YOLOv8-small + ByteTrack</td>
+              <td>單幀偵測 + 多目標追蹤</td>
+              <td>訓練資料充足（Roboflow Universe）；部署靈活；速度快</td>
+              <td>球體模糊時偵測率下降</td>
+              <td>高解析度、球體清晰的場景</td>
+            </tr>
+            <tr>
+              <td><strong>A-3</strong></td>
+              <td>WASB（Tarashima et al.）</td>
+              <td>多尺度 FCN + 跨運動種類泛化</td>
+              <td>公開程式碼與資料集；可直接 fine-tune</td>
+              <td>排球特化性低於 A-1</td>
+              <td>初期快速驗證、多運動種類比較</td>
+            </tr>
+          </table>
+          <div class="highlight-box success" style="margin-top:16px">
+            <div class="hb-title">✅ 建議策略</div>
+            以 A-1（TrackNet V2）為主要方案，標記約 500～1000 幀排球影片進行 fine-tune；以 A-2 作為 Baseline 對照實驗；以卡爾曼濾波器 + Savitzky-Golay 濾波進行軌跡平滑化後處理。
+          </div>
+        </div>
+      </div>
+
+      <!-- 方法二 -->
+      <div class="method-card">
+        <div class="method-header alt" onclick="toggleMethod(this)">
+          <span class="method-num">METHOD B</span>
+          <span class="method-name">球員姿態估計方案比較</span>
+          <span class="method-arrow">▼</span>
+        </div>
+        <div class="method-body show">
+          <p>針對多球員骨架估計，本研究比較三種主流框架：</p>
+          <table>
+            <tr>
+              <th>方案</th>
+              <th>工具</th>
+              <th>關節點數</th>
+              <th>速度（RTX 3060）</th>
+              <th>特點</th>
+            </tr>
+            <tr>
+              <td><strong>B-1</strong><br><span class="badge badge-green">推薦</span></td>
+              <td>YOLOv8-pose + DeepSORT</td>
+              <td>17 點（COCO）</td>
+              <td>~30 fps</td>
+              <td>偵測追蹤整合；跨幀 ID 穩定；Ultralytics 官方支援</td>
+            </tr>
+            <tr>
+              <td><strong>B-2</strong></td>
+              <td>MediaPipe BlazePose</td>
+              <td>33 點（全身）</td>
+              <td>~25 fps（CPU 可用）</td>
+              <td>輕量部署；單人精度高；手指、臉部關節豐富；但多人需配合 YOLOv8 裁切</td>
+            </tr>
+            <tr>
+              <td><strong>B-3</strong></td>
+              <td>OpenPose + DeepSORT</td>
+              <td>25 點（BODY_25）</td>
+              <td>~15 fps</td>
+              <td>成熟框架；大量文獻採用；速度較慢</td>
+            </tr>
+          </table>
+          <div class="highlight-box" style="margin-top:16px">
+            <div class="hb-title">💡 推薦組合</div>
+            <strong>B-1（YOLOv8-pose）</strong> 做多人追蹤主模型，對舉球手等關鍵球員裁切後額外以 <strong>B-2（MediaPipe BlazePose）</strong> 進行精細骨架分析，以獲取更豐富的上肢關節資訊（手腕、手肘角度對舉球姿態分析至關重要）。
+          </div>
+        </div>
+      </div>
+
+      <!-- 方法三 -->
+      <div class="method-card">
+        <div class="method-header alt2" onclick="toggleMethod(this)">
+          <span class="method-num">METHOD C</span>
+          <span class="method-name">時序動作分類模型比較（GRU vs. 其他）</span>
+          <span class="method-arrow">▼</span>
+        </div>
+        <div class="method-body show">
+          <p>以骨架關節序列（連續 30 幀）為輸入，比較四種時序建模策略：</p>
+          <table>
+            <tr>
+              <th>方案</th>
+              <th>模型</th>
+              <th>參數量</th>
+              <th>訓練收斂速度</th>
+              <th>動作分類精度（預估）</th>
+            </tr>
+            <tr>
+              <td><strong>C-1</strong><br><span class="badge badge-blue">本研究核心</span></td>
+              <td>Bi-GRU + Attention</td>
+              <td>~1.2M</td>
+              <td>快（梯度流動效率高）</td>
+              <td>88~92%</td>
+            </tr>
+            <tr>
+              <td><strong>C-2</strong></td>
+              <td>Bi-LSTM + Attention</td>
+              <td>~1.8M</td>
+              <td>中</td>
+              <td>87~91%</td>
+            </tr>
+            <tr>
+              <td><strong>C-3</strong></td>
+              <td>Transformer（Temporal）</td>
+              <td>~4M</td>
+              <td>慢（需較多資料）</td>
+              <td>89~93%（資料充足時）</td>
+            </tr>
+            <tr>
+              <td><strong>C-4</strong></td>
+              <td>1D-CNN + GRU（混合）</td>
+              <td>~0.8M</td>
+              <td>快</td>
+              <td>85~89%</td>
+            </tr>
+          </table>
+          <div class="highlight-box warn" style="margin-top:16px">
+            <div class="hb-title">⚠ 資料標記建議</div>
+            建議標記至少 <strong>500 個動作片段</strong>（每類約 80 個），涵蓋不同球員、不同光線條件、正面與側面視角，以確保分類模型的泛化能力。可利用 CVAT 或 Label Studio 進行標記。
+          </div>
+          <h4>輸入特徵向量設計選項：</h4>
+          <ul>
+            <li><strong>特徵組 F1（基礎）：</strong>17 關節 (x, y) 座標 + 信心分 → 51 維</li>
+            <li><strong>特徵組 F2（加速度）：</strong>F1 + 逐幀速度向量 → 85 維</li>
+            <li><strong>特徵組 F3（角度）：</strong>F2 + 12 個關節角度特徵（肩、肘、腕、髖、膝、踝）→ 97 維（推薦）</li>
+            <li><strong>特徵組 F4（含球位置）：</strong>F3 + 球體相對座標 → 99 維（舉球分析最佳）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3>4.1 損失函數與訓練策略</h3>
+    <div class="two-col">
+      <div class="highlight-box">
+        <div class="hb-title">🎯 分類任務</div>
+        採用 <strong>Focal Loss</strong>（γ=2.0）應對類別不平衡（舉球動作片段數量可能遠多於攔網），配合 Label Smoothing（ε=0.1）防止過擬合。
+      </div>
+      <div class="highlight-box success">
+        <div class="hb-title">🔧 訓練技巧</div>
+        學習率使用 Cosine Annealing（初始 1e-3），配合 Early Stopping（patience=10）。資料增強包含水平翻轉座標鏡像、時序速度微擾（±10%）、隨機遮擋部分關節。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 5. 資料集 ── -->
+<div class="container" id="dataset">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <h2 class="section-title">資料集 Datasets</h2>
+    </div>
+
+    <p class="lead">本研究使用公開資料集進行模型預訓練與基準測試，並自行錄製比賽影片進行 fine-tune 與最終評估。</p>
+
+    <div class="dataset-list">
+
+      <div class="dataset-item">
+        <div class="dataset-icon">🏐</div>
+        <div class="dataset-info">
+          <div class="dataset-name">Volleyball Dataset（Ibrahim et al., CVPR 2016）</div>
+          <div class="dataset-desc">
+            最廣泛引用的排球群體行為辨識資料集。包含 55 段廣播影片（4830 幀），每幀標記 8 種個人動作類別及 8 種群體活動類別，含球員框（bounding box）標記。適合用於球員動作辨識模型的預訓練。
+          </div>
+          <a href="https://github.com/mostafa-saad/deep-activity-rec" target="_blank" class="dataset-link">🔗 https://github.com/mostafa-saad/deep-activity-rec</a>
+        </div>
+      </div>
+
+      <div class="dataset-item">
+        <div class="dataset-icon">🎾</div>
+        <div class="dataset-info">
+          <div class="dataset-name">TrackNet Tennis Dataset（NCTU, 2018）</div>
+          <div class="dataset-desc">
+            TrackNet 原始訓練資料集。包含 10 段廣播網球影片、共 20,844 個標記幀，每幀含球體位置（X, Y）、可見度分類與軌跡樣式。球體追蹤模型的 Pre-training 極佳來源，可遷移至排球域。
+          </div>
+          <a href="https://drive.google.com/open?id=1GzJZeEPEi8lJjEAAtVnHhRdX8TVR14yK" target="_blank" class="dataset-link">🔗 https://drive.google.com/open?id=1GzJZeEPEi8lJjEAAtVnHhRdX8TVR14yK</a>
+        </div>
+      </div>
+
+      <div class="dataset-item">
+        <div class="dataset-icon">⚽</div>
+        <div class="dataset-info">
+          <div class="dataset-name">WASB（Widely Applicable Strong Baseline for SBDT, 2023）</div>
+          <div class="dataset-desc">
+            跨運動種類球體偵測與追蹤基準資料集，涵蓋多種球類運動的標記影像序列，包含完整程式碼庫，可直接進行模型對比實驗。
+          </div>
+          <a href="https://www.researchgate.net/publication/376208967_Widely_Applicable_Strong_Baseline_for_Sports_Ball_Detection_and_Tracking" target="_blank" class="dataset-link">🔗 ResearchGate: WASB Paper</a>
+        </div>
+      </div>
+
+      <div class="dataset-item">
+        <div class="dataset-icon">🏐</div>
+        <div class="dataset-info">
+          <div class="dataset-name">Volleyball Ball Object Detection Dataset（Roboflow / Kaggle）</div>
+          <div class="dataset-desc">
+            Kaggle 上公開的排球球體標記資料集，含逐幀 bounding box 標記，適合作為 YOLOv8 球體偵測的訓練資料。可作為 A-2 方案的訓練基礎。
+          </div>
+          <a href="https://www.kaggle.com/datasets/pythonistasamurai/volleyball-ball-object-detection-dataset" target="_blank" class="dataset-link">🔗 https://www.kaggle.com/datasets/pythonistasamurai/volleyball-ball-object-detection-dataset</a>
+        </div>
+      </div>
+
+      <div class="dataset-item">
+        <div class="dataset-icon">🏃</div>
+        <div class="dataset-info">
+          <div class="dataset-name">Fast Volleyball Tracking Dataset（GitHub: asigatchov）</div>
+          <div class="dataset-desc">
+            開源排球球體追蹤推論系統，基於 ONNX 優化模型，在 CPU 上可達 100 FPS，輸出球體座標至 CSV，含完整的 Rally 切割工具。可用於快速原型驗證。
+          </div>
+          <a href="https://github.com/asigatchov/fast-volleyball-tracking-inference" target="_blank" class="dataset-link">🔗 https://github.com/asigatchov/fast-volleyball-tracking-inference</a>
+        </div>
+      </div>
+
+      <div class="dataset-item">
+        <div class="dataset-icon">📹</div>
+        <div class="dataset-info">
+          <div class="dataset-name">自行錄製資料集（本研究最重要來源）</div>
+          <div class="dataset-desc">
+            建議與當地大學或體育系排球隊合作，以固定三腳架 + 廣角攝影機錄製完整比賽或訓練賽（建議至少 10 場，每場 3 局）。標記工具可使用 CVAT（cvat.ai）或 Roboflow。重點標記：球體位置、每位球員 ID、技術動作類型（舉球/扣球/接球/攔網/發球）。
+          </div>
+          <a href="https://www.cvat.ai/" target="_blank" class="dataset-link">🔗 標記工具：https://www.cvat.ai/</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── 6. 評估指標 ── -->
+<div class="container" id="eval">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <h2 class="section-title">評估指標 Evaluation Metrics</h2>
+    </div>
+
+    <h3>6.1 球體追蹤評估</h3>
+    <table class="compare-table">
+      <tr><th>指標</th><th>計算方式</th><th>目標門檻</th></tr>
+      <tr><td>Precision</td><td>TP / (TP + FP)，偵測框與真值框 IoU > 0.5</td><td>≥ 90%</td></tr>
+      <tr><td>Recall</td><td>TP / (TP + FN)</td><td>≥ 85%</td></tr>
+      <tr><td>F1-measure</td><td>2 × P × R / (P + R)</td><td>≥ 87%</td></tr>
+      <tr><td>軌跡連貫性 (MOTA)</td><td>多目標追蹤準確度（包含 ID 切換懲罰）</td><td>≥ 80%</td></tr>
+    </table>
+
+    <h3>6.2 姿態估計評估</h3>
+    <table class="compare-table">
+      <tr><th>指標</th><th>說明</th><th>目標門檻</th></tr>
+      <tr><td>OKS（Object Keypoint Similarity）</td><td>COCO 標準骨架相似度量</td><td>AP ≥ 0.75</td></tr>
+      <tr><td>PCKh（Head-normalized Percentage of Correct Keypoints）</td><td>以頭部長度正規化的關節定位精度</td><td>≥ 85%</td></tr>
+      <tr><td>ID 追蹤穩定性</td><td>100 幀內 ID 切換次數</td><td>≤ 2 次/100 幀</td></tr>
+    </table>
+
+    <h3>6.3 動作分類評估</h3>
+    <table class="compare-table">
+      <tr><th>指標</th><th>說明</th><th>目標門檻</th></tr>
+      <tr><td>Top-1 Accuracy</td><td>整體分類正確率</td><td>≥ 88%</td></tr>
+      <tr><td>Macro F1</td><td>各類別 F1 的平均（應對不平衡）</td><td>≥ 85%</td></tr>
+      <tr><td>混淆矩陣分析</td><td>特別關注「舉球 vs. 扣球」、「接球 vs. 防守」易混淆對</td><td>—</td></tr>
+    </table>
+
+    <h3>6.4 系統整體評估</h3>
+    <ul>
+      <li><strong>端對端數據準確率：</strong>抽取 20 場比賽局段，由人工逐筆核對系統輸出的舉球軌跡數量、攻擊成功率，計算整體統計誤差率（目標 ≤ 10%）。</li>
+      <li><strong>推論效率：</strong>系統在 NVIDIA RTX 3060 上的實時因子（real-time factor），目標可接近或達到 30fps 實時處理。</li>
+      <li><strong>消融實驗（Ablation Study）：</strong>逐步移除各模組（卡爾曼濾波、注意力機制、速度特徵），量化各組件對最終分類精度的貢獻。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── 7. 研究時程 ── -->
+<div class="container" id="timeline">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 07</span>
+      <h2 class="section-title">研究時程 Research Timeline</h2>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>時程</th><th>里程碑</th><th>主要工作項目</th></tr>
+      <tr>
+        <td><strong>月 1-3</strong></td>
+        <td>文獻研讀與環境建置</td>
+        <td>深入閱讀核心論文（TrackNet、Ibrahim et al.、MediaPipe）；建置開發環境（Python 3.10 + PyTorch + OpenCV）；確認資料錄製合作球隊。</td>
+      </tr>
+      <tr>
+        <td><strong>月 4-6</strong></td>
+        <td>資料收集與標記</td>
+        <td>錄製 10+ 場比賽；使用 CVAT 進行球體位置與動作類型標記；完成球場座標系統校正模組（Homography）。</td>
+      </tr>
+      <tr>
+        <td><strong>月 7-10</strong></td>
+        <td>核心模組開發（Module A-D）</td>
+        <td>Fine-tune TrackNet V2 球體追蹤；整合 YOLOv8-pose + DeepSORT；實作 Bi-GRU 分類器並完成初步訓練。</td>
+      </tr>
+      <tr>
+        <td><strong>月 11-14</strong></td>
+        <td>實驗與比較</td>
+        <td>執行全部方案比較實驗；完成消融實驗；繪製評估圖表；分析失敗案例（遮擋、模糊、逆光）。</td>
+      </tr>
+      <tr>
+        <td><strong>月 15-18</strong></td>
+        <td>整合系統與論文撰寫</td>
+        <td>整合完整 Pipeline 並生成 demo 影片；實際在球隊訓練中試用系統並收集教練反饋；撰寫碩士論文。</td>
+      </tr>
+      <tr>
+        <td><strong>月 19-24</strong></td>
+        <td>論文修訂與口試</td>
+        <td>依口試委員建議修訂；投稿期刊或研討會（建議：IEEE CVPRW Sports Analytics、IJCV 等）；完成最終版本。</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ── 8. 文獻參考 ── -->
+<div class="container" id="refs">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 08</span>
+      <h2 class="section-title">文獻參考 References</h2>
+    </div>
+    <div class="highlight-box warn" style="margin-bottom:24px">
+      <div class="hb-title">⚠ 重要說明</div>
+      以下所有文獻均為確切存在之出版品，均附原始來源網址，請直接點擊驗證。
+    </div>
+
+    <div class="ref-list">
+
+      <div class="ref-item">
+        <div class="ref-num">[1]</div>
+        <div class="ref-content">
+          <div class="ref-title">TrackNet: A Deep Learning Network for Tracking High-speed and Tiny Objects in Sports Applications</div>
+          <div class="ref-meta">Y.-C. Huang, I.-N. Liao, C.-H. Chen, T. İk, W.-C. Peng. IEEE/CVF International Workshop on Content-Aware Video Analysis (CAVA), 2019.</div>
+          <div class="ref-url"><a href="https://www.researchgate.net/publication/337538165_TrackNet_A_Deep_Learning_Network_for_Tracking_High-speed_and_Tiny_Objects_in_Sports_Applications" target="_blank">🔗 https://researchgate.net/publication/337538165</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[2]</div>
+        <div class="ref-content">
+          <div class="ref-title">A Hierarchical Deep Temporal Model for Group Activity Recognition</div>
+          <div class="ref-meta">M. S. Ibrahim, S. Muralidharan, Z. Deng, A. Vahdat, G. Mori. CVPR 2016. [含 Volleyball Dataset]</div>
+          <div class="ref-url"><a href="https://arxiv.org/abs/1511.06040" target="_blank">🔗 https://arxiv.org/abs/1511.06040</a> ／ <a href="https://github.com/mostafa-saad/deep-activity-rec" target="_blank">GitHub Dataset</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[3]</div>
+        <div class="ref-content">
+          <div class="ref-title">Real-time pose estimation and motion tracking for motion performance using deep learning models</div>
+          <div class="ref-meta">L. Liu, Y. Dai, Z. Liu. Journal of Intelligent Systems, Vol. 33(1), 2024. DOI: 10.1515/jisys-2023-0288</div>
+          <div class="ref-url"><a href="https://www.degruyterbrill.com/document/doi/10.1515/jisys-2023-0288/html?lang=en" target="_blank">🔗 https://doi.org/10.1515/jisys-2023-0288</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[4]</div>
+        <div class="ref-content">
+          <div class="ref-title">Motion-aware and data-independent model based multi-view 3D pose refinement for volleyball spike analysis</div>
+          <div class="ref-meta">Y. Liu, X. Cheng, T. Ikenaga. Multimedia Tools and Applications, Vol. 83, pp. 22995–23018, 2024. DOI: 10.1007/s11042-023-16369-8</div>
+          <div class="ref-url"><a href="https://link.springer.com/article/10.1007/s11042-023-16369-8" target="_blank">🔗 https://link.springer.com/article/10.1007/s11042-023-16369-8</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[5]</div>
+        <div class="ref-content">
+          <div class="ref-title">A comprehensive survey on pose estimation and tracking in sports: methodologies, datasets, challenges, and future directions</div>
+          <div class="ref-meta">Artificial Intelligence Review, Springer, December 2025. DOI: 10.1007/s10462-025-11344-1</div>
+          <div class="ref-url"><a href="https://link.springer.com/article/10.1007/s10462-025-11344-1" target="_blank">🔗 https://link.springer.com/article/10.1007/s10462-025-11344-1</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[6]</div>
+        <div class="ref-content">
+          <div class="ref-title">Widely Applicable Strong Baseline for Sports Ball Detection and Tracking (WASB)</div>
+          <div class="ref-meta">Tarashima et al. 2023. [含公開資料集與程式碼]</div>
+          <div class="ref-url"><a href="https://www.researchgate.net/publication/376208967_Widely_Applicable_Strong_Baseline_for_Sports_Ball_Detection_and_Tracking" target="_blank">🔗 ResearchGate: WASB Paper (2023)</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[7]</div>
+        <div class="ref-content">
+          <div class="ref-title">Enhancing volleyball training: empowering athletes and coaches through advanced sensing and analysis</div>
+          <div class="ref-meta">Salim F. et al. Frontiers in Sports and Active Living, Vol. 6, April 2024. DOI: 10.3389/fspor.2024.1326807</div>
+          <div class="ref-url"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11058639/" target="_blank">🔗 https://pmc.ncbi.nlm.nih.gov/articles/PMC11058639/</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[8]</div>
+        <div class="ref-content">
+          <div class="ref-title">Volleyball technical action recognition based on CNN-LSTM</div>
+          <div class="ref-meta">Wang J. et al. Discover Artificial Intelligence, Springer, 2025. DOI: 10.1007/s44163-025-00273-1</div>
+          <div class="ref-url"><a href="https://link.springer.com/article/10.1007/s44163-025-00273-1" target="_blank">🔗 https://link.springer.com/article/10.1007/s44163-025-00273-1</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[9]</div>
+        <div class="ref-content">
+          <div class="ref-title">Fast Volleyball Tracking Inference（開源工具）</div>
+          <div class="ref-meta">A. Sigatchov. GitHub, 2023–2024. 提供 ONNX 優化排球追蹤推論系統，支援 CPU 100 FPS。</div>
+          <div class="ref-url"><a href="https://github.com/asigatchov/fast-volleyball-tracking-inference" target="_blank">🔗 https://github.com/asigatchov/fast-volleyball-tracking-inference</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[10]</div>
+        <div class="ref-content">
+          <div class="ref-title">OpenPose: Realtime Multi-Person 2D Pose Estimation Using Part Affinity Fields</div>
+          <div class="ref-meta">Z. Cao, G. Hidalgo Martinez, T. Simon, S. Wei, Y. Sheikh. IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI), 2019.</div>
+          <div class="ref-url"><a href="https://arxiv.org/abs/1812.08008" target="_blank">🔗 https://arxiv.org/abs/1812.08008</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[11]</div>
+        <div class="ref-content">
+          <div class="ref-title">MediaPipe: A Framework for Perceiving and Processing Reality（BlazePose）</div>
+          <div class="ref-meta">V. Bazarevsky et al. Google Research. Third Workshop on Computer Vision for AR/VR at CVPR 2019. [BlazePose: On-device Real-time Body Pose Tracking, 2020]</div>
+          <div class="ref-url"><a href="https://arxiv.org/abs/2006.10204" target="_blank">🔗 https://arxiv.org/abs/2006.10204 (BlazePose)</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[12]</div>
+        <div class="ref-content">
+          <div class="ref-title">On the Properties of Neural Machine Translation: Encoder-Decoder Approaches（GRU 原始論文）</div>
+          <div class="ref-meta">K. Cho, B. van Merriënboer, D. Bahdanau, Y. Bengio. EMNLP 2014 Workshop.</div>
+          <div class="ref-url"><a href="https://arxiv.org/abs/1409.1259" target="_blank">🔗 https://arxiv.org/abs/1409.1259</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[13]</div>
+        <div class="ref-content">
+          <div class="ref-title">Volleyball Ball Object Detection Dataset（Kaggle 資料集）</div>
+          <div class="ref-meta">PythonistaSamurai. Kaggle Dataset, 2023. 含 YOLOv8 格式標記。</div>
+          <div class="ref-url"><a href="https://www.kaggle.com/datasets/pythonistasamurai/volleyball-ball-object-detection-dataset" target="_blank">🔗 https://www.kaggle.com/datasets/pythonistasamurai/volleyball-ball-object-detection-dataset</a></div>
+        </div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-num">[14]</div>
+        <div class="ref-content">
+          <div class="ref-title">Volleyball Analytics（開源專案：深度學習排球數據分析）</div>
+          <div class="ref-meta">masouduut94. GitHub, 2022–2024. 包含球員追蹤、事件偵測等範例程式碼。</div>
+          <div class="ref-url"><a href="https://github.com/masouduut94/volleyball_analytics" target="_blank">🔗 https://github.com/masouduut94/volleyball_analytics</a></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── 尾聲：給教授的溝通指引 ── -->
+<div class="container">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">💬</span>
+      <h2 class="section-title">與指導教授溝通的建議要點</h2>
+    </div>
+    <div class="highlight-box success">
+      <div class="hb-title">✅ 可以這樣跟教授說明研究創新點</div>
+      <ul style="margin-top:10px">
+        <li>「本研究不是單純複製 TrackNet 或 GRU 的應用，而是在<strong>排球特定場景</strong>下，整合球體軌跡與球員姿態兩條分析軸，輸出<strong>教練實際可用的技術數據</strong>，這是目前文獻中尚缺乏的端對端方案。」</li>
+        <li>「GRU 的選擇基於以下理由：排球技術動作時序長度約 0.5~2 秒（約 15~60 幀），屬中短序列；GRU 在此範圍的效率優於 LSTM，且比 Transformer 需要更少標記資料。」</li>
+        <li>「我們同時提供 LSTM 和 Transformer 的對比實驗，讓研究貢獻更具嚴謹性。」</li>
+        <li>「實驗資料來自真實比賽錄影，具有實際應用價值，可與 X 大學排球隊合作取得授權。」</li>
+      </ul>
+    </div>
+    <div class="highlight-box warn" style="margin-top:16px">
+      <div class="hb-title">⚠ 教授可能提出的挑戰與應對</div>
+      <ul style="margin-top:10px">
+        <li><strong>「資料量夠嗎？」</strong>→ 公開資料集預訓練 + 自錄資料 fine-tune，明確說明各階段資料量規劃（預計 500 個動作片段、10 場比賽）。</li>
+        <li><strong>「創新性在哪？」</strong>→ 強調整合性（多任務）、輸出指標的實用性（舉球軌跡量化），而非模型架構本身的創新。</li>
+        <li><strong>「單鏡頭有什麼限制？」</strong>→ 誠實說明遮擋問題，提出對應的插值補償策略，並列入 Limitations 章節。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer class="footer">
+  <strong>碩士論文提案文件</strong> — 排球比賽影像分析系統<br>
+  <span style="margin-top:8px;display:block">本文件由 AI 輔助生成，所有文獻均為真實存在之學術出版品，請點擊連結自行驗證。</span>
+</footer>
+
+<script>
+function toggleMethod(header) {
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('.method-arrow');
+  body.classList.toggle('show');
+  arrow.classList.toggle('open');
+}
+
+// Smooth scroll active nav
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.toc-nav a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current
+      ? 'rgba(255,255,255,0.95)'
+      : 'rgba(255,255,255,0.45)';
+    a.style.borderBottomColor = a.getAttribute('href') === '#' + current
+      ? '#c0392b' : 'transparent';
+  });
+});
+</script>
+
+</body>
+</html>
